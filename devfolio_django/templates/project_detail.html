@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ project.title }} | DevFolio{% endblock %}
+{% block title %}{{ project.title }} | DevFolio CCDI{% endblock %}
 
 {% block content %}
 <section class="section">
@@ -11,110 +11,113 @@
                     <img src="{{ project.featured_image.url }}" alt="{{ project.title }}">
                 {% endif %}
             </div>
+            
             <div class="meta-list">
                 <span class="badge">{{ project.category.name|default:'General' }}</span>
-                <span>{{ project.average_rating }}★ ({{ project.review_count }} reviews)</span>
-                <span>{{ project.status|title }}</span>
-            </div>
-            <h1>{{ project.title }}</h1>
-            <p>{{ project.summary }}</p>
-            <div class="meta-list">
-                <span>By {{ project.owner.get_full_name|default:project.owner.username }}</span>
-                <span>{{ project.created_at|date:'M d, Y' }}</span>
+                {% if project.status == 'approved' %}
+                    <span class="badge" style="background-color: #ebfaef; color: #166534; border-color: #bbf7d0;">Approved</span>
+                {% elif project.status == 'pending' %}
+                    <span class="badge badge-yellow">Pending Review</span>
+                {% elif project.status == 'rejected' %}
+                    <span class="badge badge-red">Rejected</span>
+                {% else %}
+                    <span class="badge badge-ink">{{ project.status|title }}</span>
+                {% endif %}
+                <span class="rating-pill"><span class="rating-star">★</span> {{ project.average_rating }} ({{ project.review_count }} review{{ project.review_count|pluralize }})</span>
             </div>
 
-            <h3>Project Description</h3>
-            <p>{{ project.description|linebreaksbr }}</p>
+            <h1 style="margin-bottom: 12px;">{{ project.title }}</h1>
+            <p style="font-size: 1.15rem; color: var(--bauhaus-ink-soft); margin-bottom: 20px; font-weight: 500;">{{ project.summary }}</p>
+
+            <div class="meta-list" style="border-top: 1px dashed var(--bauhaus-border-light); border-bottom: 1px dashed var(--bauhaus-border-light); padding: 12px 0;">
+                <span>Author: <strong>{{ project.owner.get_full_name|default:project.owner.username }}</strong></span>
+                {% if project.owner.course %}<span>Course: <strong>{{ project.owner.course }}</strong></span>{% endif %}
+                <span>Published: <strong>{{ project.created_at|date:'M d, Y' }}</strong></span>
+            </div>
+
+            <h3 style="margin-top: 28px; margin-bottom: 14px;">System Overview</h3>
+            <div style="font-size: 1.02rem; line-height: 1.7; color: var(--bauhaus-ink);">
+                {{ project.description|linebreaksbr }}
+            </div>
 
             {% if project.technologies.all %}
-                <h3>Technologies Used</h3>
+                <h3 style="margin-top: 32px; margin-bottom: 14px;">Technology Stack</h3>
                 <div class="meta-list">
                     {% for tech in project.technologies.all %}
-                        <span class="badge">{{ tech.name }}</span>
+                        <span class="badge badge-ink" style="font-size: 0.85rem; padding: 6px 12px;">{{ tech.name }}</span>
                     {% endfor %}
                 </div>
             {% endif %}
 
             {% if project.demo_url or project.source_url %}
-                <div class="cta-row">
-                    {% if project.demo_url %}<a class="btn" href="{{ project.demo_url }}" target="_blank" rel="noreferrer">Live Demo</a>{% endif %}
-                    {% if project.source_url %}<a class="btn secondary" href="{{ project.source_url }}" target="_blank" rel="noreferrer">Source Code</a>{% endif %}
+                <div class="cta-row" style="margin-top: 32px; padding-top: 20px; border-top: 2px solid var(--bauhaus-ink);">
+                    {% if project.demo_url %}<a class="btn" href="{{ project.demo_url }}" target="_blank" rel="noreferrer">Launch Live Demo &rarr;</a>{% endif %}
+                    {% if project.source_url %}<a class="btn secondary" href="{{ project.source_url }}" target="_blank" rel="noreferrer">View Source Repository</a>{% endif %}
                 </div>
             {% endif %}
         </div>
 
         <aside class="detail-card">
-            <h3>Project Owner</h3>
-            <p>{{ project.owner.get_full_name|default:project.owner.username }}</p>
-            <p>{{ project.owner.email }}</p>
+            <div class="geo-tag"><span class="geo-dot"></span> Author Profile</div>
+            <h3 style="margin-top: 4px; margin-bottom: 8px;">{{ project.owner.get_full_name|default:project.owner.username }}</h3>
+            <p style="color: var(--bauhaus-muted); font-size: 0.92rem; margin-bottom: 16px;">{{ project.owner.email }}</p>
+            {% if project.owner.course %}
+                <p style="font-size: 0.92rem;"><strong>Academic Program:</strong> {{ project.owner.course }}</p>
+            {% endif %}
 
             <div class="review-box">
-                <h3>Leave a Review</h3>
+                <h3>Submit Evaluation</h3>
                 {% if user.is_authenticated %}
                     <form method="post">
                         {% csrf_token %}
                         <div class="form-field">
-                            <label for="rating">Rating</label>
+                            <label for="rating">Rating (1 - 5 Stars)</label>
                             <select id="rating" name="rating" required>
                                 <option value="">Select rating</option>
-                                <option value="5" {% if user_review and user_review.rating == 5 %}selected{% endif %}>5 - Excellent</option>
-                                <option value="4" {% if user_review and user_review.rating == 4 %}selected{% endif %}>4 - Good</option>
-                                <option value="3" {% if user_review and user_review.rating == 3 %}selected{% endif %}>3 - Average</option>
-                                <option value="2" {% if user_review and user_review.rating == 2 %}selected{% endif %}>2 - Fair</option>
-                                <option value="1" {% if user_review and user_review.rating == 1 %}selected{% endif %}>1 - Poor</option>
+                                <option value="5" {% if user_review and user_review.rating == 5 %}selected{% endif %}>5 - Excellent / Outstanding</option>
+                                <option value="4" {% if user_review and user_review.rating == 4 %}selected{% endif %}>4 - Very Good</option>
+                                <option value="3" {% if user_review and user_review.rating == 3 %}selected{% endif %}>3 - Good / Competent</option>
+                                <option value="2" {% if user_review and user_review.rating == 2 %}selected{% endif %}>2 - Needs Improvement</option>
+                                <option value="1" {% if user_review and user_review.rating == 1 %}selected{% endif %}>1 - Unsatisfactory</option>
                             </select>
                         </div>
                         <div class="form-field">
-                            <label for="comment">Comment</label>
-                            <textarea id="comment" name="comment" rows="4">{% if user_review %}{{ user_review.comment }}{% endif %}</textarea>
+                            <label for="comment">Peer / Faculty Feedback</label>
+                            <textarea id="comment" name="comment" rows="4" placeholder="Write feedback, technical impressions, or suggestions...">{% if user_review %}{{ user_review.comment }}{% endif %}</textarea>
                         </div>
-                        <button type="submit" class="btn">Submit Review</button>
+                        <button type="submit" class="btn small" style="width: 100%;">Post Review</button>
                     </form>
                 {% else %}
-                    <p><a href="{% url 'login' %}">Log in</a> to leave a review.</p>
+                    <p style="font-size: 0.92rem; color: var(--bauhaus-muted);">
+                        Please <a href="{% url 'login' %}" style="font-weight:700; color:var(--bauhaus-blue); text-decoration: underline;">log in</a> with your CCDI account to submit a review.
+                    </p>
                 {% endif %}
             </div>
 
             <div class="review-box">
-                <h3>Reviews</h3>
+                <h3>Reviews & Feedback ({{ project.reviews.count }})</h3>
                 {% for review in project.reviews.all %}
                     <div class="review-item">
-                        <strong>{{ review.reviewer.get_full_name|default:review.reviewer.username }}</strong>
-                        <div>{{ review.rating }} / 5</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <strong>{{ review.reviewer.get_full_name|default:review.reviewer.username }}</strong>
+                            <span class="rating-pill"><span class="rating-star">★</span> {{ review.rating }}/5</span>
+                        </div>
                         <p>{{ review.comment|default:'No comment provided.' }}</p>
                     </div>
                 {% empty %}
-                    <p>No reviews yet.</p>
+                    <p style="color: var(--bauhaus-muted); font-size: 0.92rem;">No evaluations recorded yet.</p>
                 {% endfor %}
             </div>
         </aside>
     </div>
 </section>
 
-<section class="section">
-    <div class="container">
-        <div class="section-header">
-            <h2>Related Projects</h2>
-        </div>
-        <div class="grid">
-            {% for related in related_projects %}
-                <article class="card">
-                    <div class="card-body">
-                        <h3><a href="{% url 'project_detail' related.slug %}">{{ related.title }}</a></h3>
-                        <p>{{ related.summary }}</p>
-                    </div>
-                </article>
-            {% empty %}
-                <p>No related projects found.</p>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-
 {% if project.gallery.all %}
-    <section class="section">
+    <section class="section" style="background-color: var(--bauhaus-surface); border-top: 2px solid var(--bauhaus-ink); border-bottom: 2px solid var(--bauhaus-ink);">
         <div class="container">
-            <h2>Project Gallery</h2>
+            <div class="section-header">
+                <h2>Project Screenshot Gallery</h2>
+            </div>
             <div class="gallery-grid">
                 {% for image in project.gallery.all %}
                     <div class="gallery-item">
@@ -129,9 +132,44 @@
 
 {% if user.is_authenticated %}
     {% if user == project.owner or user.role == 'moderator' or user.role == 'admin' %}
-        <div class="cta-row">
-            <a href="{% url 'project_gallery_upload' project.slug %}" class="btn secondary">Upload Gallery Image</a>
+        <div class="container" style="margin-top: 30px;">
+            <div class="cta-row">
+                <a href="{% url 'project_gallery_upload' project.slug %}" class="btn secondary small">+ Upload Gallery Image</a>
+                {% if user == project.owner %}
+                    <a href="{% url 'project_edit' project.slug %}" class="btn secondary small">Edit Project</a>
+                {% endif %}
+            </div>
         </div>
     {% endif %}
 {% endif %}
+
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Related Projects</h2>
+        </div>
+        <div class="grid">
+            {% for related in related_projects %}
+                <article class="card">
+                    <div class="card-body">
+                        <div class="project-meta">
+                            <span class="badge">{{ related.category.name|default:'General' }}</span>
+                            <span class="rating-pill"><span class="rating-star">★</span> {{ related.average_rating }}</span>
+                        </div>
+                        <h3><a href="{% url 'project_detail' related.slug %}">{{ related.title }}</a></h3>
+                        <p>{{ related.summary }}</p>
+                        <div class="project-meta card-meta-footer">
+                            <span>By <strong>{{ related.owner.get_full_name|default:related.owner.username }}</strong></span>
+                            <a href="{% url 'project_detail' related.slug %}" style="font-weight:700; color:var(--bauhaus-blue);">View &rarr;</a>
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="panel" style="grid-column: 1 / -1;">
+                    <p>No related projects found in this category.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 {% endblock %}

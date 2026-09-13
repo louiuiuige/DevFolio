@@ -1,11 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard | DevFolio{% endblock %}
+{% block title %}Dashboard | DevFolio CCDI{% endblock %}
 
 {% block content %}
 <section class="dashboard">
     <div class="container">
-        <h1>Student Dashboard</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <div class="geo-tag"><span class="geo-dot"></span> Student Portal</div>
+                <h1 style="margin: 0;">Student Dashboard</h1>
+            </div>
+            <a href="{% url 'project_create' %}" class="btn">+ Submit New Project</a>
+        </div>
+
         <div class="stats-grid">
             <div class="stat-card">
                 <span>Total Projects</span>
@@ -22,28 +29,39 @@
         </div>
 
         <div class="section-header">
-            <h2>My Projects</h2>
-            <a href="{% url 'project_create' %}" class="btn">New Project</a>
+            <h2>My Submitted Projects</h2>
         </div>
 
         <div class="table-list">
             {% for project in my_projects %}
                 <div class="row">
                     <div>
-                        <strong>{{ project.title }}</strong>
-                        <div>{{ project.summary }}</div>
+                        <strong><a href="{% url 'project_detail' project.slug %}" style="color: inherit;">{{ project.title }}</a></strong>
+                        <div style="color: var(--bauhaus-muted); font-size: 0.9rem;">{{ project.summary|truncatechars:90 }}</div>
                     </div>
-                    <div>{{ project.status|title }}</div>
-                    <div>{{ project.average_rating }}★</div>
+                    <div>
+                        {% if project.status == 'approved' %}
+                            <span class="badge" style="background-color: #ebfaef; color: #166534; border-color: #bbf7d0;">Approved</span>
+                        {% elif project.status == 'pending' %}
+                            <span class="badge badge-yellow">Pending Review</span>
+                        {% elif project.status == 'rejected' %}
+                            <span class="badge badge-red">Needs Revision</span>
+                        {% else %}
+                            <span class="badge badge-ink">{{ project.status|title }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <span class="rating-pill"><span class="rating-star">★</span> {{ project.average_rating }}</span>
+                    </div>
                     <div class="actions">
                         <a href="{% url 'project_detail' project.slug %}">View</a>
                         <a href="{% url 'project_edit' project.slug %}">Edit</a>
-                        <a href="{% url 'project_delete' project.slug %}">Delete</a>
+                        <a href="{% url 'project_delete' project.slug %}" style="color: var(--bauhaus-red);">Delete</a>
                     </div>
                 </div>
             {% empty %}
                 <div class="row">
-                    <div>You have not submitted any project yet.</div>
+                    <div>You have not submitted any projects yet. Click "+ Submit New Project" above to create your portfolio entry.</div>
                 </div>
             {% endfor %}
         </div>
@@ -51,11 +69,11 @@
         {% if my_projects.has_other_pages %}
             <div class="pagination">
                 {% if my_projects.has_previous %}
-                    <a href="?page={{ my_projects.previous_page_number }}" class="btn secondary">Previous</a>
+                    <a href="?page={{ my_projects.previous_page_number }}" class="btn secondary small">&larr; Previous</a>
                 {% endif %}
-                <span>Page {{ my_projects.number }} of {{ my_projects.paginator.num_pages }}</span>
+                <span>Page <strong>{{ my_projects.number }}</strong> of {{ my_projects.paginator.num_pages }}</span>
                 {% if my_projects.has_next %}
-                    <a href="?page={{ my_projects.next_page_number }}" class="btn secondary">Next</a>
+                    <a href="?page={{ my_projects.next_page_number }}" class="btn secondary small">Next &rarr;</a>
                 {% endif %}
             </div>
         {% endif %}

@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ mode }} Project | DevFolio{% endblock %}
+{% block title %}{{ mode }} Project | DevFolio CCDI{% endblock %}
 
 {% block content %}
 <section class="section">
     <div class="container">
         <div class="form-box">
+            <div class="geo-tag"><span class="geo-dot"></span> System Submission</div>
             <h1>{{ mode }} Project</h1>
+            <p style="color: var(--bauhaus-muted); margin-bottom: 24px;">Provide comprehensive architectural and technical details for your CCDI system.</p>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="form-grid">
@@ -14,14 +16,18 @@
                         <div class="form-field {% if field.name in 'title summary description category technologies featured_image demo_url source_url' %}full{% endif %}">
                             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                             {{ field }}
+                            {% if field.help_text %}
+                                <small style="color: var(--bauhaus-muted); font-size: 0.82rem;">{{ field.help_text }}</small>
+                            {% endif %}
                             {% if field.errors %}
-                                <div class="alert alert-error">{{ field.errors|join:', ' }}</div>
+                                <div class="alert alert-error" style="margin-top: 6px; padding: 8px 12px; font-size: 0.85rem;">{{ field.errors|join:', ' }}</div>
                             {% endif %}
                         </div>
                     {% endfor %}
                 </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn">Save Project</button>
+                <div class="form-actions" style="margin-top: 28px;">
+                    <button type="submit" class="btn">Save & Submit Project</button>
+                    <a href="{% url 'dashboard' %}" class="btn secondary">Cancel</a>
                 </div>
             </form>
         </div>

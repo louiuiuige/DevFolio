@@ -1,22 +1,45 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}DevFolio{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <title>{% block title %}DevFolio | CCDI College{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- v=dark_techy_v1 — forces stylesheet reload -->
+    <link rel="stylesheet" href="{% static 'styles.css' %}?v=dark_techy_v1">
+    <script>
+        // Apply saved theme before paint to avoid flash
+        (function() {
+            var t = localStorage.getItem('devfolio-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
 </head>
 <body>
     <header class="site-header">
         <div class="container nav-wrap">
-            <a href="{% url 'home' %}" class="brand">DevFolio</a>
+            <a href="{% url 'home' %}" class="brand-wrap">
+                <!-- Circle-cropped CCDI logo: border-radius:50% + object-fit:cover forces circle -->
+                <img src="{% static 'img/ccdi_logo.png' %}"
+                     alt="CCDI College Logo"
+                     class="brand-logo"
+                     width="40"
+                     height="40"
+                     style="height:40px!important;width:40px!important;max-height:40px!important;max-width:40px!important;border-radius:50%!important;object-fit:cover!important;object-position:center!important;display:inline-block!important;flex-shrink:0!important;">
+                <div class="brand-title-group">
+                    <span class="brand">Dev<span class="accent">Folio</span><span class="dot">.</span></span>
+                    <span class="brand-sub">// CCDI · Systems Portfolio</span>
+                </div>
+            </a>
             <nav class="main-nav">
                 <a href="{% url 'home' %}">Home</a>
                 <a href="{% url 'project_list' %}">Projects</a>
                 {% if user.is_authenticated %}
                     <a href="{% url 'dashboard' %}">Dashboard</a>
-                    <a href="{% url 'project_create' %}">Submit Project</a>
+                    <a href="{% url 'project_create' %}" class="nav-btn-highlight">+ Submit</a>
                     {% if user.role == 'moderator' or user.role == 'admin' %}
                         <a href="{% url 'moderation_queue' %}">Moderation</a>
                     {% endif %}
@@ -25,13 +48,23 @@
                     {% endif %}
                     <form method="post" action="{% url 'logout' %}" class="logout-form">
                         {% csrf_token %}
-                        <button type="submit">Logout</button>
+                        <button type="submit">Logout ({{ user.username }})</button>
                     </form>
                 {% else %}
                     <a href="{% url 'login' %}">Login</a>
-                    <a href="{% url 'register' %}">Register</a>
+                    <a href="{% url 'register' %}" class="nav-btn-highlight">Register</a>
                 {% endif %}
+                <!-- Dark mode toggle -->
+                <button class="dark-mode-toggle" id="darkToggle" onclick="toggleDark()" title="Toggle dark mode" aria-label="Toggle dark mode">
+                    <span class="toggle-icon" id="darkIcon">🌙</span>
+                    <span id="darkLabel">Dark</span>
+                </button>
             </nav>
+        </div>
+        <div class="bauhaus-color-bar" aria-hidden="true">
+            <div class="bar-blue"></div>
+            <div class="bar-red"></div>
+            <div class="bar-yellow"></div>
         </div>
     </header>
 
@@ -46,5 +79,83 @@
 
         {% block content %}{% endblock %}
     </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo-row">
+                    <img src="{% static 'img/ccdi_logo.png' %}"
+                         alt="CCDI College"
+                         class="footer-logo"
+                         width="34"
+                         height="34"
+                         style="height:34px!important;width:34px!important;max-height:34px!important;max-width:34px!important;border-radius:50%!important;object-fit:cover!important;object-position:center!important;display:inline-block!important;flex-shrink:0!important;">
+                    <span class="footer-brand-title">DevFolio.</span>
+                </div>
+                <p class="footer-desc">
+                    Computer Communication Development Institute (CCDI) student systems showcase and capstone portfolio. Form follows function.
+                </p>
+                <span class="footer-sys-tag">SYS://CCDI-DEVFOLIO · BUILD 2026 · BAUHAUS-EDITION</span>
+            </div>
+            <div class="footer-col">
+                <h4>// Navigation</h4>
+                <ul class="footer-links">
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'project_list' %}">Browse Projects</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'dashboard' %}">Student Dashboard</a></li>
+                        <li><a href="{% url 'project_create' %}">Submit New Project</a></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Student / Faculty Login</a></li>
+                        <li><a href="{% url 'register' %}">Create Account</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>// Institution</h4>
+                <ul class="footer-links">
+                    <li><a href="#">CCDI College</a></li>
+                    <li><a href="#">Software Engineering Dept.</a></li>
+                    <li><a href="#">Capstone Projects &amp; Demos</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container">
+            <div class="footer-bottom">
+                <span>&copy; 2026 <strong>DevFolio</strong> — Computer Communication Development Institute (CCDI).</span>
+                <span class="badge badge-ink">Bauhaus UI · Dark Mode Edition</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleDark() {
+            var html = document.documentElement;
+            var current = html.getAttribute('data-theme');
+            var next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('devfolio-theme', next);
+            updateToggleUI(next);
+        }
+
+        function updateToggleUI(theme) {
+            var icon = document.getElementById('darkIcon');
+            var label = document.getElementById('darkLabel');
+            if (!icon || !label) return;
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                label.textContent = 'Light';
+            } else {
+                icon.textContent = '🌙';
+                label.textContent = 'Dark';
+            }
+        }
+
+        // Sync button label with current theme on load
+        (function() {
+            var t = document.documentElement.getAttribute('data-theme') || 'light';
+            updateToggleUI(t);
+        })();
+    </script>
 </body>
 </html>

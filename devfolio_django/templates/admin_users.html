@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}User Management | DevFolio{% endblock %}
+{% block title %}User Management | DevFolio CCDI{% endblock %}
 
 {% block content %}
 <section class="dashboard">
     <div class="container">
         <div class="section-header">
-            <h2>User Management</h2>
+            <div>
+                <div class="geo-tag"><span class="geo-dot"></span> User Directory</div>
+                <h2>User Management</h2>
+            </div>
+            <a href="{% url 'admin_dashboard' %}" class="btn secondary small">&larr; Back to Admin</a>
         </div>
 
         <div class="table-list">
@@ -14,16 +18,24 @@
                 <div class="row">
                     <div>
                         <strong>{{ user.get_full_name|default:user.username }}</strong>
-                        <div>{{ user.email }}</div>
+                        <div style="font-size: 0.9rem; color: var(--bauhaus-muted);">{{ user.email }}</div>
                     </div>
-                    <div>{{ user.role|title }}</div>
-                    <div>{{ user.course|default:'N/A' }}</div>
+                    <div>
+                        {% if user.role == 'admin' %}
+                            <span class="badge badge-red">Administrator</span>
+                        {% elif user.role == 'moderator' %}
+                            <span class="badge badge-yellow">Moderator</span>
+                        {% else %}
+                            <span class="badge">Student</span>
+                        {% endif %}
+                    </div>
+                    <div>{{ user.course|default:'No course assigned' }}</div>
                     <div class="actions">
-                        <span>{{ user.date_joined|date:'M d, Y' }}</span>
+                        <span style="font-size: 0.85rem; color: var(--bauhaus-muted);">Joined {{ user.date_joined|date:'M d, Y' }}</span>
                     </div>
                 </div>
             {% empty %}
-                <div class="row"><div>No users found.</div></div>
+                <div class="row"><div>No users found in database.</div></div>
             {% endfor %}
         </div>
     </div>

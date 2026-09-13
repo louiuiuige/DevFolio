@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Register | DevFolio{% endblock %}
+{% block title %}Register | DevFolio CCDI{% endblock %}
 
 {% block content %}
 <section class="section">
     <div class="container">
         <div class="form-box">
-            <h1>Create an Account</h1>
+            <div class="geo-tag"><span class="geo-dot"></span> New Membership</div>
+            <h1>Create Student Account</h1>
+            <p style="color: var(--bauhaus-muted); margin-bottom: 24px;">Join DevFolio to document, publish, and showcase your CCDI engineering capstones.</p>
             <form method="post">
                 {% csrf_token %}
                 <div class="form-grid">
@@ -14,14 +16,18 @@
                         <div class="form-field {% if field.name in 'username full_name email student_id course year_level password1 password2' %}full{% endif %}">
                             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                             {{ field }}
+                            {% if field.help_text %}
+                                <small style="color: var(--bauhaus-muted); font-size: 0.82rem;">{{ field.help_text }}</small>
+                            {% endif %}
                             {% if field.errors %}
-                                <div class="alert alert-error">{{ field.errors|join:', ' }}</div>
+                                <div class="alert alert-error" style="margin-top: 6px; padding: 8px 12px; font-size: 0.85rem;">{{ field.errors|join:', ' }}</div>
                             {% endif %}
                         </div>
                     {% endfor %}
                 </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn">Register</button>
+                <div class="form-actions" style="margin-top: 28px;">
+                    <button type="submit" class="btn">Complete Registration</button>
+                    <a href="{% url 'login' %}" class="btn secondary">Already registered? Log In</a>
                 </div>
             </form>
         </div>

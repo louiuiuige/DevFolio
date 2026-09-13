@@ -1,31 +1,37 @@
 {% extends 'base.html' %}
 
-{% block title %}DevFolio | Home{% endblock %}
+{% block title %}DevFolio | CCDI Student Showcase{% endblock %}
 
 {% block content %}
 <section class="hero">
     <div class="container hero-inner">
         <div>
-            <h1>Showcase your student-built systems.</h1>
+            <div class="hero-tag">
+                <span class="geo-dot"></span>
+                <span class="geo-triangle"></span>
+                <span class="geo-square"></span>
+                CCDI Capstone & Software Showcase
+            </div>
+            <h1>Showcase your student-built systems<span class="dot-accent">.</span></h1>
             <p>
-                DevFolio helps CCDI students present projects, ideas, and technical solutions in a professional portfolio that faculty, clients, and peers can explore.
+                Form follows function. DevFolio empowers CCDI engineering students to present technical capstone systems, web architectures, and digital solutions in a structured, high-impact portfolio.
             </p>
             <div class="cta-row">
-                <a href="{% url 'project_list' %}" class="btn">Browse Projects</a>
+                <a href="{% url 'project_list' %}" class="btn hero-btn-primary">Explore All Projects &rarr;</a>
                 {% if user.is_authenticated %}
-                    <a href="{% url 'project_create' %}" class="btn secondary">Submit a Project</a>
+                    <a href="{% url 'project_create' %}" class="btn hero-btn-secondary">+ Submit Project</a>
                 {% else %}
-                    <a href="{% url 'register' %}" class="btn secondary">Create Account</a>
+                    <a href="{% url 'register' %}" class="btn hero-btn-secondary">Get Started</a>
                 {% endif %}
             </div>
         </div>
         <div class="panel">
             <h3>Platform Highlights</h3>
             <ul>
-                <li>Project discovery with category and keyword filters</li>
-                <li>Student portfolios with project details and live demos</li>
-                <li>Peer reviews and rating system</li>
-                <li>Moderator and admin approval flow</li>
+                <li><strong>Project Discovery:</strong> Search by technical stack, course, and year level</li>
+                <li><strong>System Portfolios:</strong> Detailed architecture overviews, gallery images, and live demos</li>
+                <li><strong>Peer Reviews:</strong> Constructive faculty and student rating system</li>
+                <li><strong>Quality Moderation:</strong> Verified capstone and project approval flow</li>
             </ul>
         </div>
     </div>
@@ -34,8 +40,11 @@
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2>Featured Projects</h2>
-            <a href="{% url 'project_list' %}">View all</a>
+            <div>
+                <div class="geo-tag" style="margin-bottom: 8px;"><span class="geo-dot"></span> Showcase</div>
+                <h2>Featured Projects</h2>
+            </div>
+            <a href="{% url 'project_list' %}">View all projects &rarr;</a>
         </div>
         <div class="grid">
             {% for project in featured_projects %}
@@ -48,35 +57,56 @@
                     <div class="card-body">
                         <div class="project-meta">
                             <span class="badge">{{ project.category.name|default:'General' }}</span>
-                            <span>{{ project.average_rating }}★</span>
+                            <span class="rating-pill"><span class="rating-star">★</span> {{ project.average_rating }}</span>
                         </div>
                         <h3><a href="{% url 'project_detail' project.slug %}">{{ project.title }}</a></h3>
                         <p>{{ project.summary }}</p>
-                        <div class="project-meta">
-                            <span>by {{ project.owner.get_full_name|default:project.owner.username }}</span>
-                            <span>{{ project.review_count }} reviews</span>
+                        <div class="project-meta card-meta-footer">
+                            <span>By <strong>{{ project.owner.get_full_name|default:project.owner.username }}</strong></span>
+                            <span>{{ project.review_count }} review{{ project.review_count|pluralize }}</span>
                         </div>
                     </div>
                 </article>
             {% empty %}
-                <p>No approved projects yet. Be the first to submit one.</p>
+                <div class="panel" style="grid-column: 1 / -1; text-align: center;">
+                    <p>No approved projects yet. Be the first CCDI student to submit a project.</p>
+                </div>
             {% endfor %}
         </div>
     </div>
 </section>
 
-<section class="section">
+<section class="section" style="background-color: var(--bauhaus-surface); border-top: 1px solid var(--bauhaus-border); border-bottom: 1px solid var(--bauhaus-border);">
     <div class="container">
         <div class="section-header">
-            <h2>Browse by Category</h2>
+            <div>
+                <div class="geo-tag" style="margin-bottom: 8px;"><span class="geo-dot"></span> Specializations</div>
+                <h2>Browse by Category</h2>
+            </div>
         </div>
         <div class="grid">
             {% for category in categories %}
-                <div class="card">
-                    <div class="card-body">
-                        <h3><a href="{% url 'project_list' %}?category={{ category.slug }}">{{ category.name }}</a></h3>
-                        <p>{{ category.projects.count }} project(s)</p>
+                <div class="category-card">
+                    <span class="badge" style="margin-bottom: 12px; width: fit-content;">
+                        {% if forloop.counter0|divisibleby:3 %}
+                            <span class="geo-dot" style="margin-right: 4px;"></span>
+                        {% elif forloop.counter0|divisibleby:2 %}
+                            <span class="geo-square" style="margin-right: 4px;"></span>
+                        {% else %}
+                            <span class="geo-triangle" style="margin-right: 4px;"></span>
+                        {% endif %}
+                        {{ category.slug|title }}
+                    </span>
+                    <h3><a href="{% url 'project_list' %}?category={{ category.slug }}">{{ category.name }}</a></h3>
+                    <p>{{ category.description|default:'Explore student projects built in this specialization.' }}</p>
+                    <div class="project-meta card-meta-footer">
+                        <span><strong>{{ category.projects.count }}</strong> system{{ category.projects.count|pluralize }}</span>
+                        <a href="{% url 'project_list' %}?category={{ category.slug }}" style="font-weight:600; color:var(--bauhaus-blue);">Browse &rarr;</a>
                     </div>
+                </div>
+            {% empty %}
+                <div class="panel" style="grid-column: 1 / -1;">
+                    <p>Categories will appear here once configured.</p>
                 </div>
             {% endfor %}
         </div>

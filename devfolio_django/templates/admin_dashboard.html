@@ -1,11 +1,17 @@
 {% extends 'base.html' %}
 
-{% block title %}Admin Dashboard | DevFolio{% endblock %}
+{% block title %}Admin Dashboard | DevFolio CCDI{% endblock %}
 
 {% block content %}
 <section class="dashboard">
     <div class="container">
-        <h1>Admin Dashboard</h1>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <div class="geo-tag"><span class="geo-dot"></span> System Administration</div>
+                <h1 style="margin: 0;">Administration Portal</h1>
+            </div>
+            <a href="{% url 'admin_users' %}" class="btn secondary">Manage User Accounts</a>
+        </div>
 
         <div class="stats-grid">
             <div class="stat-card"><span>Total Users</span><strong>{{ stats.total_users }}</strong></div>
@@ -13,30 +19,40 @@
             <div class="stat-card"><span>Moderators</span><strong>{{ stats.moderators }}</strong></div>
             <div class="stat-card"><span>Total Projects</span><strong>{{ stats.projects }}</strong></div>
             <div class="stat-card"><span>Approved</span><strong>{{ stats.approved }}</strong></div>
-            <div class="stat-card"><span>Pending</span><strong>{{ stats.pending }}</strong></div>
+            <div class="stat-card"><span>Pending Review</span><strong>{{ stats.pending }}</strong></div>
             <div class="stat-card"><span>Rejected</span><strong>{{ stats.rejected }}</strong></div>
         </div>
 
         <div class="section-header">
             <h2>Recent Projects</h2>
-            <a href="{% url 'admin_users' %}" class="btn secondary">Manage Users</a>
+            <a href="{% url 'moderation_queue' %}">Review Queue &rarr;</a>
         </div>
 
         <div class="table-list">
             {% for project in recent_projects %}
                 <div class="row">
                     <div>
-                        <strong>{{ project.title }}</strong>
-                        <div>{{ project.owner.get_full_name|default:project.owner.username }}</div>
+                        <strong><a href="{% url 'project_detail' project.slug %}" style="color: inherit;">{{ project.title }}</a></strong>
+                        <div style="font-size: 0.9rem; color: var(--bauhaus-muted);">Owner: {{ project.owner.get_full_name|default:project.owner.username }}</div>
                     </div>
-                    <div>{{ project.category.name|default:'General' }}</div>
-                    <div>{{ project.status|title }}</div>
+                    <div><span class="badge">{{ project.category.name|default:'General' }}</span></div>
+                    <div>
+                        {% if project.status == 'approved' %}
+                            <span class="badge" style="background-color: #ebfaef; color: #166534; border-color: #bbf7d0;">Approved</span>
+                        {% elif project.status == 'pending' %}
+                            <span class="badge badge-yellow">Pending</span>
+                        {% elif project.status == 'rejected' %}
+                            <span class="badge badge-red">Rejected</span>
+                        {% else %}
+                            <span class="badge badge-ink">{{ project.status|title }}</span>
+                        {% endif %}
+                    </div>
                     <div class="actions">
-                        <a href="{% url 'project_detail' project.slug %}">View</a>
+                        <a href="{% url 'project_detail' project.slug %}">View Details</a>
                     </div>
                 </div>
             {% empty %}
-                <div class="row"><div>No projects available.</div></div>
+                <div class="row"><div>No projects available in the system yet.</div></div>
             {% endfor %}
         </div>
     </div>

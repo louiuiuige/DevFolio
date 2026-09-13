@@ -1,39 +1,43 @@
 {% extends 'base.html' %}
 
-{% block title %}Moderation Queue | DevFolio{% endblock %}
+{% block title %}Moderation Queue | DevFolio CCDI{% endblock %}
 
 {% block content %}
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <h2>Project Moderation</h2>
+            <div>
+                <div class="geo-tag"><span class="geo-dot"></span> Quality Assurance</div>
+                <h2>Project Moderation Queue</h2>
+            </div>
+            <span class="badge badge-yellow">{{ pending_projects.count }} Pending Review</span>
         </div>
 
         <div class="table-list">
             {% for project in pending_projects %}
-                <div class="row">
+                <div class="row" style="grid-template-columns: 2fr 1fr 1fr auto;">
                     <div>
-                        <strong>{{ project.title }}</strong>
-                        <div>{{ project.summary }}</div>
-                        <div>Owner: {{ project.owner.get_full_name|default:project.owner.username }}</div>
+                        <strong><a href="{% url 'project_detail' project.slug %}" style="color: inherit;">{{ project.title }}</a></strong>
+                        <div style="font-size: 0.9rem; color: var(--bauhaus-muted);">{{ project.summary|truncatechars:90 }}</div>
+                        <div style="font-size: 0.85rem; margin-top: 4px;">Student: <strong>{{ project.owner.get_full_name|default:project.owner.username }}</strong></div>
                     </div>
-                    <div>{{ project.category.name|default:'General' }}</div>
-                    <div>{{ project.created_at|date:'M d, Y' }}</div>
-                    <div class="actions">
-                        <a href="{% url 'project_detail' project.slug %}">View</a>
-                        <form method="post" action="{% url 'project_approve' project.slug %}">
+                    <div><span class="badge">{{ project.category.name|default:'General' }}</span></div>
+                    <div><span style="font-size: 0.9rem;">{{ project.created_at|date:'M d, Y' }}</span></div>
+                    <div class="actions" style="display: flex; gap: 8px;">
+                        <a href="{% url 'project_detail' project.slug %}" class="btn secondary small">Inspect</a>
+                        <form method="post" action="{% url 'project_approve' project.slug %}" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit">Approve</button>
+                            <button type="submit" class="btn small" style="background-color: #16a34a; border-color: var(--bauhaus-ink); color: #fff;">Approve</button>
                         </form>
-                        <form method="post" action="{% url 'project_reject' project.slug %}">
+                        <form method="post" action="{% url 'project_reject' project.slug %}" style="display:inline;">
                             {% csrf_token %}
-                            <button type="submit">Reject</button>
+                            <button type="submit" class="btn small accent-red">Reject</button>
                         </form>
                     </div>
                 </div>
             {% empty %}
                 <div class="row">
-                    <div>No projects are currently waiting for review.</div>
+                    <div style="padding: 24px; text-align: center;">No projects are currently awaiting review. All submissions are up to date!</div>
                 </div>
             {% endfor %}
         </div>
