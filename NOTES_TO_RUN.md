@@ -13,8 +13,9 @@ if Windows (PowerShell) ".venv\Scripts\Activate.ps1"
 (you should now see this in your console "(.venv)")
 like this -> "(.venv) C:\Users\you\my_django_project>"
 
-then type this and hit enter:
-"python manage.py runserver"
+then type these and hit enter:
+"python manage.py seed_data"
+"python manage.py runserver 0.0.0.0:8000"
 
 (you are now running the server, you will see the site when you enter this into
 your browser "http://127.0.0.1:8000/")
