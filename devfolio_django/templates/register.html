@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Register | DevFolio{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="form-box">
+            <h1>Create an Account</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-grid">
+                    {% for field in form %}
+                        <div class="form-field {% if field.name in 'username full_name email student_id course year_level password1 password2' %}full{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="alert alert-error">{{ field.errors|join:', ' }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

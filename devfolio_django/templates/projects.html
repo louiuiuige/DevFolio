@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Projects | DevFolio{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Project Showcase</h2>
+        </div>
+
+        <form method="get" class="form-box">
+            <div class="form-grid">
+                <div class="form-field full">
+                    <label for="search">Search projects</label>
+                    <input type="text" id="search" name="q" value="{{ current_query }}" placeholder="Search by title, keyword, technology, or owner">
+                </div>
+                <div class="form-field">
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        <option value="">All categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.slug }}" {% if category.slug == current_category %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="technology">Technology</label>
+                    <select id="technology" name="technology">
+                        <option value="">All technologies</option>
+                        {% for technology in technologies %}
+                            <option value="{{ technology.slug }}" {% if technology.slug == current_technology %}selected{% endif %}>{{ technology.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="course">Course</label>
+                    <select id="course" name="course">
+                        <option value="">All courses</option>
+                        {% for course in courses %}
+                            <option value="{{ course }}" {% if course == current_course %}selected{% endif %}>{{ course }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="year">Year Level</label>
+                    <select id="year" name="year">
+                        <option value="">Any year</option>
+                        {% for year in year_choices %}
+                            <option value="{{ year }}" {% if year|stringformat:'s' == current_year %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn">Apply Filters</button>
+                <a href="{% url 'project_list' %}" class="btn secondary">Clear</a>
+            </div>
+        </form>
+
+        <div class="grid">
+            {% for project in projects %}
+                <article class="card">
+                    <div class="card-image">
+                        {% if project.featured_image %}
+                            <img src="{{ project.featured_image.url }}" alt="{{ project.title }}">
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="project-meta">
+                            <span class="badge">{{ project.category.name|default:'General' }}</span>
+                            <span>{{ project.average_rating }}★</span>
+                        </div>
+                        <h3><a href="{% url 'project_detail' project.slug %}">{{ project.title }}</a></h3>
+                        <p>{{ project.summary }}</p>
+                        <div class="project-meta">
+                            <span>{{ project.owner.get_full_name|default:project.owner.username }}</span>
+                            <span>{{ project.review_count }} reviews</span>
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <p>No projects matched your current filters.</p>
+            {% endfor %}
+        </div>
+
+        {% if projects.has_other_pages %}
+            <div class="pagination">
+                {% if projects.has_previous %}
+                    <a href="?page={{ projects.previous_page_number }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_technology %}&technology={{ current_technology }}{% endif %}{% if current_course %}&course={{ current_course }}{% endif %}{% if current_year %}&year={{ current_year }}{% endif %}" class="btn secondary">Previous</a>
+                {% endif %}
+                <span>Page {{ projects.number }} of {{ projects.paginator.num_pages }}</span>
+                {% if projects.has_next %}
+                    <a href="?page={{ projects.next_page_number }}{% if current_query %}&q={{ current_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if current_technology %}&technology={{ current_technology }}{% endif %}{% if current_course %}&course={{ current_course }}{% endif %}{% if current_year %}&year={{ current_year }}{% endif %}" class="btn secondary">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

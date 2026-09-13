@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard | DevFolio{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="container">
+        <h1>Student Dashboard</h1>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span>Total Projects</span>
+                <strong>{{ my_projects.count }}</strong>
+            </div>
+            <div class="stat-card">
+                <span>Approved</span>
+                <strong>{{ approved_projects }}</strong>
+            </div>
+            <div class="stat-card">
+                <span>Incoming Reviews</span>
+                <strong>{{ total_reviews }}</strong>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>My Projects</h2>
+            <a href="{% url 'project_create' %}" class="btn">New Project</a>
+        </div>
+
+        <div class="table-list">
+            {% for project in my_projects %}
+                <div class="row">
+                    <div>
+                        <strong>{{ project.title }}</strong>
+                        <div>{{ project.summary }}</div>
+                    </div>
+                    <div>{{ project.status|title }}</div>
+                    <div>{{ project.average_rating }}★</div>
+                    <div class="actions">
+                        <a href="{% url 'project_detail' project.slug %}">View</a>
+                        <a href="{% url 'project_edit' project.slug %}">Edit</a>
+                        <a href="{% url 'project_delete' project.slug %}">Delete</a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="row">
+                    <div>You have not submitted any project yet.</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if my_projects.has_other_pages %}
+            <div class="pagination">
+                {% if my_projects.has_previous %}
+                    <a href="?page={{ my_projects.previous_page_number }}" class="btn secondary">Previous</a>
+                {% endif %}
+                <span>Page {{ my_projects.number }} of {{ my_projects.paginator.num_pages }}</span>
+                {% if my_projects.has_next %}
+                    <a href="?page={{ my_projects.next_page_number }}" class="btn secondary">Next</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

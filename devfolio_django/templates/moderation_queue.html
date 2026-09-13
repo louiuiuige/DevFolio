@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Moderation Queue | DevFolio{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Project Moderation</h2>
+        </div>
+
+        <div class="table-list">
+            {% for project in pending_projects %}
+                <div class="row">
+                    <div>
+                        <strong>{{ project.title }}</strong>
+                        <div>{{ project.summary }}</div>
+                        <div>Owner: {{ project.owner.get_full_name|default:project.owner.username }}</div>
+                    </div>
+                    <div>{{ project.category.name|default:'General' }}</div>
+                    <div>{{ project.created_at|date:'M d, Y' }}</div>
+                    <div class="actions">
+                        <a href="{% url 'project_detail' project.slug %}">View</a>
+                        <form method="post" action="{% url 'project_approve' project.slug %}">
+                            {% csrf_token %}
+                            <button type="submit">Approve</button>
+                        </form>
+                        <form method="post" action="{% url 'project_reject' project.slug %}">
+                            {% csrf_token %}
+                            <button type="submit">Reject</button>
+                        </form>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="row">
+                    <div>No projects are currently waiting for review.</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

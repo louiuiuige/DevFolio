@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | DevFolio{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="form-box" style="max-width: 460px;">
+            <h1>Welcome Back</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-field">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
+                <div class="form-field">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn">Login</button>
+                </div>
+            </form>
+            <p>Need an account? <a href="{% url 'register' %}">Register here.</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}

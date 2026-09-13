@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Gallery Image | DevFolio{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="form-box">
+            <h1>Upload Project Screenshot</h1>
+            <p>Upload a new image for <strong>{{ project.title }}</strong>.</p>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-grid">
+                    <div class="form-field full">
+                        <label for="id_image">Image</label>
+                        {{ form.image }}
+                    </div>
+                    <div class="form-field full">
+                        <label for="id_caption">Caption</label>
+                        {{ form.caption }}
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn">Upload Image</button>
+                    <a href="{% url 'project_detail' project.slug %}" class="btn secondary">Back to project</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

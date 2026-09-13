@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}User Management | DevFolio{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="container">
+        <div class="section-header">
+            <h2>User Management</h2>
+        </div>
+
+        <div class="table-list">
+            {% for user in users %}
+                <div class="row">
+                    <div>
+                        <strong>{{ user.get_full_name|default:user.username }}</strong>
+                        <div>{{ user.email }}</div>
+                    </div>
+                    <div>{{ user.role|title }}</div>
+                    <div>{{ user.course|default:'N/A' }}</div>
+                    <div class="actions">
+                        <span>{{ user.date_joined|date:'M d, Y' }}</span>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="row"><div>No users found.</div></div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

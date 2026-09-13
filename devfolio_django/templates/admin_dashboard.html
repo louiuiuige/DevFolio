@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard | DevFolio{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card"><span>Total Users</span><strong>{{ stats.total_users }}</strong></div>
+            <div class="stat-card"><span>Students</span><strong>{{ stats.students }}</strong></div>
+            <div class="stat-card"><span>Moderators</span><strong>{{ stats.moderators }}</strong></div>
+            <div class="stat-card"><span>Total Projects</span><strong>{{ stats.projects }}</strong></div>
+            <div class="stat-card"><span>Approved</span><strong>{{ stats.approved }}</strong></div>
+            <div class="stat-card"><span>Pending</span><strong>{{ stats.pending }}</strong></div>
+            <div class="stat-card"><span>Rejected</span><strong>{{ stats.rejected }}</strong></div>
+        </div>
+
+        <div class="section-header">
+            <h2>Recent Projects</h2>
+            <a href="{% url 'admin_users' %}" class="btn secondary">Manage Users</a>
+        </div>
+
+        <div class="table-list">
+            {% for project in recent_projects %}
+                <div class="row">
+                    <div>
+                        <strong>{{ project.title }}</strong>
+                        <div>{{ project.owner.get_full_name|default:project.owner.username }}</div>
+                    </div>
+                    <div>{{ project.category.name|default:'General' }}</div>
+                    <div>{{ project.status|title }}</div>
+                    <div class="actions">
+                        <a href="{% url 'project_detail' project.slug %}">View</a>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="row"><div>No projects available.</div></div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
