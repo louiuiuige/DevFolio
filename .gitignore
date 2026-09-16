@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+devfolio_django/db.sqlite3
+devfolio_django/staticfiles/
+.env
